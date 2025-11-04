@@ -168,4 +168,4 @@ Sorularınız veya önerileriniz için issue açabilir veya pull request gönder
 
 ---
 
-**Not**: Bu araç ticari kullanım için uygundur. Model lisansları için BRIA AI'nin şartlarını kontrol edin.
+**Not**: Bu araç ticari kullanım için uygundur. Model lisansları için BRIA AI'nin şartlarını kontrol edin.# RMBG
