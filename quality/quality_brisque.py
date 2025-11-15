@@ -10,6 +10,7 @@ import numpy as np
 import csv
 from datetime import datetime
 from PIL import Image
+import shutil
 
 # scipy.misc.imresize için patch (yeni scipy versiyonlarında kaldırıldı)
 try:
@@ -128,10 +129,16 @@ for file in os.listdir(data_path):
         # Kombine durum
         if brisque_score <= 40 and niqe_score <= 5.0:
             genel_durum = "Kaliteli"
+            os.makedirs(os.path.join(data_path, "good"), exist_ok=True)
+            shutil.copy(img_path, os.path.join(data_path, "good", file))
         elif brisque_score > 40 and niqe_score > 5.0:
             genel_durum = "Kalitesiz"
+            os.makedirs(os.path.join(data_path, "bad"), exist_ok=True)
+            shutil.copy(img_path, os.path.join(data_path, "bad", file))
         else:
             genel_durum = "Şüpheli"
+            os.makedirs(os.path.join(data_path, "suspicious"), exist_ok=True)
+            shutil.copy(img_path, os.path.join(data_path, "suspicious", file))
         
         # Sonuçları kaydet
         results.append([
