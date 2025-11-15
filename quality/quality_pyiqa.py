@@ -11,6 +11,7 @@ class QualityResult:
     decision: QualityDecision
     fused_score: float
     musiq_score: float
+    maniqa_score: float
     brisque_score: float
     musiq_norm: float
     brisque_norm: float
@@ -34,6 +35,7 @@ class QualityChecker:
         # pyiqa modellerini yükle
         self.musiq = pyiqa.create_metric('musiq').to(self.device)
         self.brisque = pyiqa.create_metric('brisque').to(self.device)
+        self.maniqa = pyiqa.create_metric('maniqa').to(self.device)
 
     def _normalize_scores(self, musiq_score: float, brisque_score: float):
         """
@@ -51,7 +53,7 @@ class QualityChecker:
         with torch.no_grad():
             musiq_score = float(self.musiq(img).item())
             brisque_score = float(self.brisque(img).item())
-
+            maniqa_score = float(self.maniqa(img).item())
         musiq_norm, brisque_norm = self._normalize_scores(musiq_score, brisque_score)
 
         fused = (
@@ -79,6 +81,7 @@ class QualityChecker:
             decision=decision,
             fused_score=float(fused),
             musiq_score=musiq_score,
+            maniqa_score=maniqa_score,
             brisque_score=brisque_score,
             musiq_norm=float(musiq_norm),
             brisque_norm=float(brisque_norm),
@@ -94,7 +97,7 @@ class QualityChecker:
 if __name__ == "__main__":
     qc = QualityChecker()
 
-    result = qc.analyze_file("data/tek-ebat-kadriye-basturk_1688355604.jpg")
+    result = qc.analyze_file("data/kalitesiz.jpeg")
     print(result)
 
     # Örnek çıktı:
@@ -107,3 +110,9 @@ if __name__ == "__main__":
     #   'brisque_norm': 0.58,
     #   'message': 'Görsel kalitesi sınırda. ...'
     # }
+
+#| Model       | Türü                | Gücü                                                     | Zayıflığı             | Canlı kullanım       |
+#| ----------- | ------------------- | -------------------------------------------------------- | --------------------- | -------------------- |
+#| **BRISQUE** | Klasik (no-ref)     | Çok hızlı, eğitim gerekmez                               | Bazı hataları kaçırır | Mükemmel (çok hızlı) |
+#| **MUSIQ**   | Transformer tabanlı | Çok kararlı, geniş bozulmaları yakalar                   | BRISQUE’den yavaş     | Uygun                |
+#| **MANIQA**  | En güçlü AI modeli  | Blur, noise, exposure, compression hepsini süper yakalar | En yavaş              | GPU varsa çok uygun  |
